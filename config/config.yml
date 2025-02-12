@@ -1,0 +1,29 @@
+# Cluster Configuration
+cluster.name: opensearch-cluster
+
+# Experimental Features
+opensearch.experimental.feature.read.write.split.enabled: true
+
+# Network
+network.host: 0.0.0.0
+
+# Discovery
+discovery.seed_hosts: ["opensearch-node1", "opensearch-node2", "opensearch-node3", "opensearch-node4", "opensearch-node5"]
+cluster.initial_cluster_manager_nodes: ["opensearch-node2"]
+
+# Memory
+bootstrap.memory_lock: true
+
+# Remote Store Configuration
+node.attr.remote_store.segment.repository: "my-repository"
+node.attr.remote_store.translog.repository: "my-repository"
+node.attr.remote_store.state.repository: "my-repository"
+node.attr.remote_store.repository.my-repository.type: "fs"
+
+# Paths
+path.repo: "/usr/share/opensearch/fsrepo"
+node.attr.remote_store.repository.my-repository.settings.location: "/usr/share/opensearch/fsrepo"
+
+# logger.level: debug
+
+#  "opensearch-node4", "opensearch-node5", "opensearch-node6"

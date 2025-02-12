@@ -1,0 +1,167 @@
+version: '3'
+
+x-opensearch-env: &opensearch-env
+  DISABLE_SECURITY_PLUGIN: ${SECURITY_DISABLED}
+  cluster.name: ${CLUSTER_NAME}
+  bootstrap.memory_lock: true
+  OPENSEARCH_JAVA_OPTS: ${JAVA_OPTS}
+  OPENSEARCH_INITIAL_ADMIN_PASSWORD: ${OS_PASSWORD}
+
+x-opensearch-ulimits: &opensearch-ulimits
+  memlock:
+    soft: -1
+    hard: -1
+  nofile:
+    soft: 65536
+    hard: 65536
+
+x-opensearch-volumes: &opensearch-volumes
+  - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+  - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+
+services:
+  opensearch-node1:
+    image: ${OS_IMAGE}
+    container_name: ${OS_NODE1_NAME}
+    environment:
+      <<: *opensearch-env
+      node.name: ${OS_NODE1_NAME}
+      node.attr.zone: "zone1"
+      node.roles: '["coordinating"]'
+    ulimits: *opensearch-ulimits
+    volumes:
+      - opensearch-data1:/usr/share/opensearch/data
+      - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+      - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+    ports:
+      - ${OS_HTTP_PORT}:9200
+      - ${OS_PERF_PORT}:9600
+    networks:
+      - opensearch-net
+
+  opensearch-node2:
+    image: ${OS_IMAGE}
+    container_name: ${OS_NODE2_NAME}
+    environment:
+      <<: *opensearch-env
+      node.name: ${OS_NODE2_NAME}
+      node.attr.zone: "zone1"
+      node.roles: '["cluster_manager"]'
+    ulimits: *opensearch-ulimits
+    volumes:
+      - opensearch-data2:/usr/share/opensearch/data
+      - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+      - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+    networks:
+      - opensearch-net
+
+  opensearch-node3:
+    image: ${OS_IMAGE}
+    container_name: ${OS_NODE3_NAME}
+    environment:
+      <<: *opensearch-env
+      node.name: ${OS_NODE3_NAME}
+      node.attr.zone: "zone2"
+      node.roles: '["data"]'
+    ulimits: *opensearch-ulimits
+    volumes:
+      - opensearch-data3:/usr/share/opensearch/data
+      - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+      - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+    networks:
+      - opensearch-net
+
+  opensearch-node4:
+    image: ${OS_IMAGE}
+    container_name: ${OS_NODE4_NAME}
+    environment:
+      <<: *opensearch-env
+      node.name: ${OS_NODE4_NAME}
+      node.attr.zone: "zone2"
+      node.roles: '["data"]'
+    ulimits: *opensearch-ulimits
+    volumes:
+      - opensearch-data4:/usr/share/opensearch/data
+      - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+      - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+    networks:
+      - opensearch-net
+
+  opensearch-node5:
+    image: ${OS_IMAGE}
+    container_name: ${OS_NODE5_NAME}
+    environment:
+      <<: *opensearch-env
+      node.name: ${OS_NODE5_NAME}
+      node.attr.zone: "zone3"
+      node.roles: '["data"]'
+    ulimits: *opensearch-ulimits
+    volumes:
+      - opensearch-data5:/usr/share/opensearch/data
+      - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+      - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+    networks:
+      - opensearch-net
+
+  # opensearch-node6:
+  #   image: ${OS_IMAGE}
+  #   container_name: ${OS_NODE6_NAME}
+  #   environment:
+  #     <<: *opensearch-env
+  #     node.name: ${OS_NODE6_NAME}
+  #     node.attr.zone: "zone3"
+  #     # node.roles: '["data"]'
+  #   ulimits: *opensearch-ulimits
+  #   volumes:
+  #     - opensearch-data6:/usr/share/opensearch/data
+  #     - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+  #     - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+  #   networks:
+  #     - opensearch-net
+
+  # opensearch-node7:
+  #   image: ${OS_IMAGE}
+  #   container_name: ${OS_NODE7_NAME}
+  #   environment:
+  #     <<: *opensearch-env
+  #     node.name: ${OS_NODE7_NAME}
+  #     node.attr.zone: "zone3"
+  #     # node.roles: '["data"]'
+  #   ulimits: *opensearch-ulimits
+  #   volumes:
+  #     - opensearch-data7:/usr/share/opensearch/data
+  #     - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+  #     - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+  #   networks:
+  #     - opensearch-net
+
+  # opensearch-node8:
+  #   image: ${OS_IMAGE}
+  #   container_name: ${OS_NODE8_NAME}
+  #   environment:
+  #     <<: *opensearch-env
+  #     node.name: ${OS_NODE8_NAME}
+  #     node.attr.zone: "zone3"
+  #     # node.roles: '["data"]'
+  #   ulimits: *opensearch-ulimits
+  #   volumes:
+  #     - opensearch-data8:/usr/share/opensearch/data
+  #     - ${OS_CONFIG_FILE}:/usr/share/opensearch/config/opensearch.yml
+  #     - ${OS_FSREPO_PATH}:/usr/share/opensearch/fsrepo
+  #   networks:
+  #     - opensearch-net
+
+volumes:
+  opensearch-data1:
+  opensearch-data2:
+  opensearch-data3:
+  opensearch-data4:
+  opensearch-data5:
+  # opensearch-data6:
+  # opensearch-data7:
+  # opensearch-data8:
+  fsrepo:
+
+networks:
+  opensearch-net:
+    name: ${OS_NETWORK_NAME}
